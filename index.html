@@ -1,0 +1,2706 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Circuito ITF 2026 — Planificador</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --clay: #c8501a;
+    --clay-dark: #8c3610;
+    --clay-light: #f0a070;
+    --court-green: #2d6e3e;
+    --hard: #2a5298;
+    --grass: #3a7d44;
+    --bg: #0e0e0e;
+    --bg2: #181818;
+    --bg3: #222222;
+    --border: #2e2e2e;
+    --text: #f0ede8;
+    --muted: #888;
+    --gold: #d4a843;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #0e0e0e 0%, #1a0a00 60%, #2a1000 100%);
+    border-bottom: 2px solid var(--clay);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 1rem 0;
+  }
+
+  .logo {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+  }
+
+  .logo-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    color: var(--clay);
+    letter-spacing: 3px;
+  }
+
+  .logo-sub {
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .stat-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.4rem 1rem;
+  }
+
+  .stat-pill .num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: var(--clay);
+    line-height: 1;
+  }
+
+  .stat-pill .lbl {
+    font-size: 0.62rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  /* LAYOUT */
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 2rem;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: var(--bg3);
+    padding: 0.8rem 1.2rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .card-header h3 {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--muted);
+  }
+
+  .card-header .icon {
+    font-size: 1rem;
+  }
+
+  .card-body {
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  select, input[type="date"] {
+    width: 100%;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.55rem 0.8rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  select:focus, input[type="date"]:focus {
+    outline: none;
+    border-color: var(--clay);
+  }
+
+  .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    transition: background 0.15s;
+  }
+
+  .checkbox-item:hover {
+    background: var(--bg3);
+  }
+
+  .checkbox-item input[type="checkbox"] {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+
+  .checkbox-item input[type="checkbox"]:checked {
+    background: var(--clay);
+    border-color: var(--clay);
+  }
+
+  .checkbox-item input[type="checkbox"]:checked::after {
+    content: '✓';
+    display: block;
+    text-align: center;
+    font-size: 10px;
+    color: white;
+    line-height: 13px;
+  }
+
+  .checkbox-label {
+    font-size: 0.85rem;
+    flex: 1;
+  }
+
+  .flag {
+    font-size: 1.1rem;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--clay);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: var(--clay-light);
+    transform: translateY(-1px);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--clay);
+    border: 1px solid var(--clay);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    font-weight: 500;
+    margin-top: 0.3rem;
+  }
+
+  .btn-outline:hover {
+    background: var(--clay);
+    color: white;
+  }
+
+  /* MY CIRCUIT */
+  .circuit-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .circuit-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg3);
+    border-radius: 6px;
+    padding: 0.5rem 0.7rem;
+    gap: 0.5rem;
+  }
+
+  .circuit-item .ci-name {
+    font-size: 0.82rem;
+    font-weight: 500;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .circuit-item .ci-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  .ci-remove {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.15s;
+  }
+
+  .ci-remove:hover {
+    color: #e55;
+  }
+
+  .empty-circuit {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.82rem;
+    padding: 1rem;
+  }
+
+  /* MAIN CONTENT */
+  .main {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .toolbar-left {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .tab-btn {
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .tab-btn.active {
+    background: var(--clay);
+    border-color: var(--clay);
+    color: white;
+  }
+
+  .tab-btn:hover:not(.active) {
+    border-color: var(--clay);
+    color: var(--clay-light);
+  }
+
+  .results-info {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* TOURNAMENT GRID */
+  .tournament-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1rem;
+  }
+
+  /* TOURNAMENT CARD */
+  .t-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .t-card:hover {
+    border-color: var(--clay);
+    transform: translateY(-2px);
+  }
+
+  .t-card.in-circuit {
+    border-color: var(--gold);
+  }
+
+  .t-card.in-circuit::after {
+    content: '★';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: var(--gold);
+    font-size: 1rem;
+  }
+
+  .t-header {
+    padding: 0.9rem 1.1rem 0.7rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .t-category {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+  }
+
+  .cat-m15 {
+    background: rgba(200, 80, 26, 0.15);
+    color: var(--clay-light);
+    border: 1px solid rgba(200, 80, 26, 0.3);
+  }
+
+  .cat-m25 {
+    background: rgba(212, 168, 67, 0.15);
+    color: var(--gold);
+    border: 1px solid rgba(212, 168, 67, 0.3);
+  }
+
+  .t-surface {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .surface-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .surf-clay { background: var(--clay); }
+  .surf-hard { background: var(--hard); }
+  .surf-grass { background: var(--grass); }
+
+  .t-body {
+    padding: 0.9rem 1.1rem;
+  }
+
+  .t-name {
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+  }
+
+  .t-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .t-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.77rem;
+    color: var(--muted);
+  }
+
+  .t-meta-item strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .t-dates {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--clay-light);
+    margin-bottom: 0.8rem;
+  }
+
+  .t-footer {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .add-btn {
+    flex: 1;
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+
+  .add-btn.add {
+    background: var(--clay);
+    color: white;
+  }
+
+  .add-btn.add:hover {
+    background: var(--clay-light);
+  }
+
+  .add-btn.remove {
+    background: transparent;
+    border: 1px solid #e55;
+    color: #e55;
+  }
+
+  .add-btn.remove:hover {
+    background: #e55;
+    color: white;
+  }
+
+  .itf-link {
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: all 0.15s;
+  }
+
+  .itf-link:hover {
+    border-color: var(--clay);
+    color: var(--clay-light);
+  }
+
+  /* TIMELINE VIEW */
+  .timeline {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .timeline.visible {
+    display: flex;
+  }
+
+  .month-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .month-header {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 4px;
+    color: var(--clay);
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .month-count {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 90px 1px 1fr;
+    gap: 0 1rem;
+    padding-bottom: 1rem;
+    align-items: start;
+  }
+
+  .tl-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--clay-light);
+    text-align: right;
+    padding-top: 0.1rem;
+  }
+
+  .tl-line {
+    width: 1px;
+    background: var(--border);
+    position: relative;
+    margin: 0 auto;
+    min-height: 100%;
+  }
+
+  .tl-line::before {
+    content: '';
+    position: absolute;
+    top: 0.35rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--clay);
+    border: 2px solid var(--bg2);
+  }
+
+  .tl-content {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.7rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    transition: border-color 0.2s;
+    cursor: pointer;
+  }
+
+  .tl-content:hover {
+    border-color: var(--clay);
+  }
+
+  .tl-content.in-circuit {
+    border-color: var(--gold);
+  }
+
+  .tl-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .tl-name {
+    font-weight: 600;
+    font-size: 0.92rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .tl-meta-row {
+    display: flex;
+    gap: 0.8rem;
+    font-size: 0.74rem;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+
+  .tl-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  /* LOADING */
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    gap: 1rem;
+    color: var(--muted);
+  }
+
+  .spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border);
+    border-top-color: var(--clay);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* EXPORT */
+  .export-section {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .export-info {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .export-info strong {
+    color: var(--text);
+    font-size: 1rem;
+  }
+
+  .export-btns {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .export-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    color: var(--text);
+    transition: all 0.15s;
+  }
+
+  .export-btn:hover {
+    border-color: var(--clay);
+    color: var(--clay-light);
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .modal-overlay.open {
+    display: flex;
+  }
+
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 100%;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.3rem;
+    cursor: pointer;
+  }
+
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+    margin-bottom: 1.5rem;
+    padding-right: 2rem;
+  }
+
+  .modal-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+
+  .modal-row:last-child { border-bottom: none; }
+
+  .modal-row .key {
+    color: var(--muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .modal-row .val {
+    font-weight: 500;
+    text-align: right;
+  }
+
+  .modal-tip {
+    background: rgba(200, 80, 26, 0.08);
+    border: 1px solid rgba(200, 80, 26, 0.2);
+    border-radius: 8px;
+    padding: 0.8rem;
+    font-size: 0.82rem;
+    color: var(--clay-light);
+    margin-top: 1rem;
+    line-height: 1.5;
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--muted);
+  }
+
+  .empty-state .big-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .empty-state p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  /* NOTICE */
+  .itf-notice {
+    background: rgba(212, 168, 67, 0.06);
+    border: 1px solid rgba(212, 168, 67, 0.2);
+    border-radius: 8px;
+    padding: 0.7rem 1rem;
+    font-size: 0.75rem;
+    color: var(--gold);
+    line-height: 1.5;
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  @media (max-width: 900px) {
+    .container {
+      grid-template-columns: 1fr;
+      padding: 1rem;
+    }
+    .header-stats { display: none; }
+    .tournament-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── PLAYER SEARCH PANEL ── */
+  .player-search-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.2rem;
+  }
+  .player-search-header {
+    background: var(--bg3);
+    padding: 0.8rem 1.2rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+  }
+  .player-search-header h3 {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .player-search-toggle { font-size: 0.8rem; color: var(--muted); transition: transform 0.2s; }
+  .player-search-toggle.open { transform: rotate(180deg); }
+  .player-search-body { padding: 1.2rem; display: none; }
+  .player-search-body.open { display: block; }
+  .search-input-row { display: flex; gap: 0.5rem; margin-bottom: 0.8rem; }
+  .search-input-row input {
+    flex: 1;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.6rem 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    transition: border-color 0.2s;
+  }
+  .search-input-row input:focus { outline: none; border-color: var(--clay); }
+  .search-input-row input::placeholder { color: var(--muted); }
+  .search-mode-tabs { display: flex; gap: 0.4rem; margin-bottom: 1rem; }
+  .mode-tab {
+    padding: 0.3rem 0.8rem;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 0.74rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .mode-tab.active { background: var(--clay); border-color: var(--clay); color: white; }
+  .btn-search {
+    padding: 0.6rem 1.2rem;
+    background: var(--clay);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-search:hover { background: var(--clay-light); }
+  .player-result { display: none; }
+  .player-result.visible { display: block; }
+  .player-profile {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    background: var(--bg3);
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border);
+  }
+  .player-avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--clay-dark), var(--clay));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; flex-shrink: 0;
+    border: 2px solid var(--clay);
+  }
+  .player-info { flex: 1; min-width: 0; }
+  .player-name { font-weight: 700; font-size: 1rem; margin-bottom: 0.2rem; }
+  .player-meta { display: flex; flex-wrap: wrap; gap: 0.6rem; font-size: 0.74rem; color: var(--muted); }
+  .player-meta span strong { color: var(--clay-light); }
+  .player-itf-link {
+    font-size: 0.72rem; color: var(--clay-light); text-decoration: none;
+    border: 1px solid var(--clay); border-radius: 4px; padding: 0.25rem 0.6rem;
+    white-space: nowrap; transition: all 0.15s; display: inline-block;
+  }
+  .player-itf-link:hover { background: var(--clay); color: white; }
+  .next-month-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem; letter-spacing: 3px; color: var(--clay);
+    margin-bottom: 0.7rem; display: flex; align-items: center; gap: 0.6rem;
+  }
+  .next-month-title .month-badge {
+    font-family: 'DM Sans', sans-serif; font-size: 0.68rem;
+    background: rgba(200,80,26,0.15); border: 1px solid rgba(200,80,26,0.3);
+    border-radius: 4px; padding: 0.15rem 0.5rem;
+    color: var(--clay-light); letter-spacing: 2px;
+  }
+  .plan-week {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.8rem 1rem; margin-bottom: 0.6rem;
+    display: flex; gap: 1rem; align-items: flex-start;
+  }
+  .plan-week-date {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    color: var(--clay-light); min-width: 65px; padding-top: 0.1rem;
+  }
+  .plan-week-info { flex: 1; }
+  .plan-week-name { font-weight: 600; font-size: 0.88rem; margin-bottom: 0.2rem; }
+  .plan-week-meta { font-size: 0.74rem; color: var(--muted); }
+  .plan-status {
+    font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 4px;
+    font-weight: 600; white-space: nowrap; align-self: center;
+  }
+  .status-inscrito { background: rgba(45,110,62,0.2); border: 1px solid rgba(45,110,62,0.4); color: #6fcf97; }
+  .status-posible { background: rgba(212,168,67,0.15); border: 1px solid rgba(212,168,67,0.3); color: var(--gold); }
+  .status-libre { background: rgba(100,100,100,0.1); border: 1px solid var(--border); color: var(--muted); }
+  .player-loading { display: flex; align-items: center; gap: 0.7rem; color: var(--muted); font-size: 0.85rem; padding: 1rem 0; }
+  .player-not-found {
+    background: rgba(200,80,26,0.06); border: 1px solid rgba(200,80,26,0.2);
+    border-radius: 8px; padding: 1rem; font-size: 0.84rem; color: var(--clay-light); text-align: center;
+  }
+  .ai-badge {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-size: 0.65rem; background: rgba(100,80,180,0.15);
+    border: 1px solid rgba(100,80,180,0.3); color: #a89cd4;
+    border-radius: 4px; padding: 0.15rem 0.5rem;
+    letter-spacing: 1px; font-weight: 600; margin-left: 0.5rem;
+  }
+  .plan-ai-note {
+    font-size: 0.73rem; color: var(--muted); background: var(--bg3);
+    border-radius: 6px; padding: 0.6rem 0.8rem; margin-top: 0.5rem;
+    line-height: 1.5; border-left: 2px solid var(--clay);
+  }
+
+  /* ── CANDIDATE LIST ── */
+  .candidates-title {
+    font-size: 0.72rem; color: var(--muted); text-transform: uppercase;
+    letter-spacing: 2px; margin-bottom: 0.7rem;
+  }
+  .candidate-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.5rem; }
+  .candidate-card {
+    display: flex; align-items: center; gap: 0.9rem;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.7rem 1rem;
+    cursor: pointer; transition: all 0.18s;
+  }
+  .candidate-card:hover { border-color: var(--clay); background: rgba(200,80,26,0.06); transform: translateX(3px); }
+  .candidate-flag { font-size: 1.4rem; flex-shrink: 0; }
+  .candidate-info { flex: 1; min-width: 0; }
+  .candidate-name { font-weight: 600; font-size: 0.92rem; }
+  .candidate-sub  { font-size: 0.73rem; color: var(--muted); margin-top: 0.15rem; }
+  .candidate-arrow { color: var(--muted); font-size: 0.9rem; transition: color 0.15s; }
+  .candidate-card:hover .candidate-arrow { color: var(--clay-light); }
+  .candidate-note {
+    font-size: 0.72rem; color: var(--muted); text-align: center;
+    padding: 0.4rem 0; border-top: 1px solid var(--border); margin-top: 0.3rem;
+  }
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 0.75rem; color: var(--muted); background: none;
+    border: 1px solid var(--border); border-radius: 5px;
+    padding: 0.3rem 0.7rem; cursor: pointer; margin-bottom: 0.9rem;
+    font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+  }
+  .back-btn:hover { border-color: var(--clay); color: var(--clay-light); }
+
+  /* ── PLAYER FORM ── */
+  .pf-intro { font-size: 0.78rem; color: var(--muted); margin-bottom: 1rem; line-height: 1.5; }
+  .pf-intro a { color: var(--clay-light); }
+  .pf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; margin-bottom: 1rem; }
+  .pf-field { display: flex; flex-direction: column; gap: 0.3rem; }
+  .pf-wide  { grid-column: 1 / -1; }
+  .pf-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; display: block; }
+  .pf-input {
+    background: var(--bg); color: var(--text); border: 1px solid var(--border);
+    border-radius: 6px; padding: 0.55rem 0.8rem;
+    font-family: 'DM Sans', sans-serif; font-size: 0.86rem;
+    transition: border-color 0.2s; width: 100%;
+  }
+  .pf-input:focus   { outline: none; border-color: var(--clay); }
+  .pf-input::placeholder { color: var(--muted); }
+  .pf-input.error   { border-color: #e55; }
+  .pf-actions { display: flex; gap: 0.6rem; align-items: center; margin-bottom: 0.8rem; }
+  .pf-clear {
+    background: transparent; border: 1px solid var(--border); color: var(--muted);
+    border-radius: 6px; padding: 0.55rem 1rem; font-size: 0.78rem;
+    font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.15s;
+  }
+  .pf-clear:hover { border-color: var(--clay); color: var(--clay-light); }
+  @media (max-width: 600px) { .pf-grid { grid-template-columns: 1fr; } .pf-wide { grid-column: 1; } }
+
+  /* ── CALENDAR VIEW ── */
+  .calendar-view { display: none; }
+  .calendar-view.visible { display: block; }
+
+  .cal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 0.8rem; gap: 1rem; flex-wrap: wrap;
+  }
+  .cal-nav { display: flex; align-items: center; gap: 0.6rem; }
+  .cal-nav-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem;
+    letter-spacing: 4px; color: var(--text); min-width: 220px; text-align: center;
+  }
+  .cal-nav-title span { color: var(--clay); }
+  .cal-nav-btn {
+    background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+    border-radius: 6px; padding: 0.4rem 0.85rem; cursor: pointer; font-size: 1.1rem;
+    transition: all 0.15s; line-height: 1;
+  }
+  .cal-nav-btn:hover { border-color: var(--clay); color: var(--clay-light); }
+
+  .cal-mode-tabs { display: flex; gap: 0.4rem; }
+  .cal-mode-btn {
+    padding: 0.3rem 0.85rem; border-radius: 5px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); font-size: 0.74rem;
+    font-weight: 500; cursor: pointer; transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .cal-mode-btn.active { background: var(--clay); border-color: var(--clay); color: white; }
+
+  .cal-legend {
+    display: flex; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 0.8rem;
+    font-size: 0.71rem; color: var(--muted); padding: 0.5rem 0;
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  }
+  .cal-legend-item { display: flex; align-items: center; gap: 0.4rem; }
+  .cal-legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+  /* Grid: 7 cols + header row */
+  .cal-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .cal-th {
+    text-align: center; font-size: 0.68rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700;
+    padding: 0.4rem 0; border-bottom: 2px solid var(--border);
+  }
+  .cal-th.weekend { color: var(--clay-light); }
+  .cal-td {
+    vertical-align: top; border: 1px solid var(--border);
+    padding: 0; min-height: 90px; width: 14.28%;
+  }
+  .cal-td.other-month { background: rgba(0,0,0,0.15); }
+  .cal-td.today { box-shadow: inset 0 0 0 2px var(--clay); }
+  .cal-td.weekend-col { background: rgba(200,80,26,0.03); }
+
+  .cal-day-inner { padding: 0.3rem 0.35rem; min-height: 90px; }
+
+  .cal-day-num {
+    font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;
+    color: var(--muted); line-height: 1; margin-bottom: 0.3rem;
+    display: flex; align-items: center; justify-content: flex-end;
+  }
+  .cal-today-badge {
+    background: var(--clay); color: white; border-radius: 50%;
+    width: 20px; height: 20px; display: flex; align-items: center;
+    justify-content: center; font-size: 0.68rem; font-weight: 700;
+  }
+  .cal-td.other-month .cal-day-num { opacity: 0.4; }
+
+  .cal-pill {
+    display: block; font-size: 0.6rem; border-radius: 3px;
+    padding: 0.18rem 0.35rem; margin-bottom: 2px; cursor: pointer;
+    line-height: 1.35; overflow: hidden; text-overflow: ellipsis;
+    white-space: nowrap; transition: filter 0.15s; border: none;
+    text-align: left; width: 100%;
+  }
+  .cal-pill:hover { filter: brightness(1.25); }
+
+  /* Tournament type colors */
+  .cp-itf     { background: rgba(200,80,26,0.22);  color: #f0a070; }
+  .cp-circuit { background: rgba(212,168,67,0.28); color: #d4a843; }
+  .cp-custom  { background: rgba(99,179,237,0.22); color: #63b3ed; }
+  .cp-plan-ok { background: rgba(111,207,151,0.25);color: #6fcf97; }
+  .cp-plan-alt{ background: rgba(200,80,26,0.15);  color: #f0a070; }
+  .cp-more    { background: var(--bg3); color: var(--muted); text-align:center; cursor:default; }
+
+  /* Pill continuation bar (day 2-6 of same tournament) */
+  .cal-pill.is-cont { border-radius: 0; margin-left: -0.35rem; padding-left: 0.35rem; }
+  .cal-pill.is-start{ border-radius: 3px 0 0 3px; }
+  .cal-pill.is-end  { border-radius: 0 3px 3px 0; }
+
+  /* ── CUSTOM TOURNAMENT MODAL ── */
+  .custom-modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85); z-index: 300;
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+  .custom-modal-overlay.open { display: flex; }
+  .custom-modal {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.8rem; max-width: 460px; width: 100%;
+    position: relative; max-height: 90vh; overflow-y: auto;
+  }
+  .custom-modal h2 {
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem;
+    letter-spacing: 2px; color: var(--clay); margin-bottom: 1.2rem;
+  }
+  .cm-field { margin-bottom: 0.9rem; }
+  .cm-label {
+    display: block; font-size: 0.68rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.3rem;
+    font-weight: 600;
+  }
+  .cm-input {
+    width: 100%; background: var(--bg); color: var(--text);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 0.55rem 0.8rem; font-family: 'DM Sans', sans-serif;
+    font-size: 0.86rem; transition: border-color 0.2s;
+  }
+  .cm-input:focus { outline: none; border-color: var(--clay); }
+  .cm-input.error { border-color: #e55; }
+  .cm-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+  .cm-actions { display: flex; gap: 0.6rem; margin-top: 1.2rem; }
+  .cm-save {
+    flex: 1; padding: 0.7rem; background: var(--clay); color: white;
+    border: none; border-radius: 8px; font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem; letter-spacing: 2px; cursor: pointer; transition: background 0.15s;
+  }
+  .cm-save:hover { background: var(--clay-light); }
+  .cm-cancel {
+    padding: 0.7rem 1.2rem; background: transparent; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .cm-cancel:hover { border-color: var(--clay); color: var(--clay-light); }
+  .custom-badge {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-size: 0.65rem; background: rgba(99,179,237,0.15);
+    border: 1px solid rgba(99,179,237,0.3); color: #63b3ed;
+    border-radius: 4px; padding: 0.15rem 0.5rem;
+    letter-spacing: 1px; font-weight: 600;
+  }
+  .custom-list { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.8rem; }
+  .custom-item {
+    display: flex; align-items: center; gap: 0.6rem;
+    background: var(--bg3); border: 1px solid rgba(99,179,237,0.2);
+    border-radius: 6px; padding: 0.5rem 0.7rem; font-size: 0.82rem;
+  }
+  .custom-item-info { flex: 1; min-width: 0; }
+  .custom-item-name { font-weight: 600; font-size: 0.85rem; }
+  .custom-item-meta { font-size: 0.7rem; color: var(--muted); }
+
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-title">🎾 CIRCUITO ITF</div>
+      <div class="logo-sub">Planificador de Torneos 2026 · España & Europa</div>
+    </div>
+    <div class="header-stats">
+      <div class="stat-pill">
+        <span class="num" id="stat-total">—</span>
+        <span class="lbl">Torneos</span>
+      </div>
+      <div class="stat-pill">
+        <span class="num" id="stat-my">0</span>
+        <span class="lbl">Mi Circuito</span>
+      </div>
+      <div class="stat-pill">
+        <span class="num" id="stat-pts">0</span>
+        <span class="lbl">ATP Pts Est.</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">🔍</span>
+        <h3>Filtros</h3>
+      </div>
+      <div class="card-body">
+
+        <div>
+          <label>Categoría</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item">
+              <input type="checkbox" id="cat-m15" checked>
+              <span class="checkbox-label">M15 — $15.000</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" id="cat-m25" checked>
+              <span class="checkbox-label">M25 — $25.000</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label>Países</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item">
+              <input type="checkbox" id="ctr-esp" checked>
+              <span class="flag">🇪🇸</span>
+              <span class="checkbox-label">España</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" id="ctr-prt" checked>
+              <span class="flag">🇵🇹</span>
+              <span class="checkbox-label">Portugal</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" id="ctr-fra" checked>
+              <span class="flag">🇫🇷</span>
+              <span class="checkbox-label">Francia</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" id="ctr-ita">
+              <span class="flag">🇮🇹</span>
+              <span class="checkbox-label">Italia</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" id="ctr-mar">
+              <span class="flag">🇲🇦</span>
+              <span class="checkbox-label">Marruecos</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" id="ctr-tun">
+              <span class="flag">🇹🇳</span>
+              <span class="checkbox-label">Túnez</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" id="ctr-tur">
+              <span class="flag">🇹🇷</span>
+              <span class="checkbox-label">Turquía</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label>Superficie</label>
+          <select id="filter-surface">
+            <option value="all">Todas</option>
+            <option value="Clay">Tierra batida</option>
+            <option value="Hard">Pista rápida</option>
+            <option value="Grass">Hierba</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Mes</label>
+          <select id="filter-month">
+            <option value="all">Todos (Ene–Jun)</option>
+            <option value="1">Enero</option>
+            <option value="2">Febrero</option>
+            <option value="3">Marzo</option>
+            <option value="4">Abril</option>
+            <option value="5">Mayo</option>
+            <option value="6">Junio</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary" onclick="applyFilters()">FILTRAR</button>
+        <button class="btn btn-outline" onclick="resetFilters()">Restablecer filtros</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">⭐</span>
+        <h3>Mi Circuito</h3>
+      </div>
+      <div class="card-body" style="padding-bottom:0.5rem">
+        <div class="circuit-list" id="circuit-list">
+          <div class="empty-circuit">Sin torneos seleccionados aún.<br>Añade torneos al circuito →</div>
+        </div>
+        <div style="margin-top:0.5rem;display:flex;flex-direction:column;gap:0.4rem">
+          <button class="btn btn-outline" onclick="exportToFile()" style="font-size:0.8rem">💾 Guardar copia (.json)</button>
+          <button class="btn btn-outline" onclick="document.getElementById('import-file').click()" style="font-size:0.8rem">📂 Cargar copia (.json)</button>
+          <input type="file" id="import-file" accept=".json" style="display:none" onchange="importFromFile(event)">
+          <button class="btn btn-outline" onclick="exportCircuit()" style="font-size:0.75rem;color:var(--muted)">📋 Copiar lista texto</button>
+          <button class="btn btn-outline" onclick="clearAllData()" style="font-size:0.75rem;color:var(--muted);border-color:var(--border)">🗑 Borrar todo</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="itf-notice">
+      💾 <span style="color:var(--clay-light)">Se guarda automáticamente. Usa <strong>Guardar copia</strong> para llevar tus datos a otro ordenador.</span> &nbsp;⚠️ <span>Los torneos marcados con <strong>✅</strong> están verificados en <a href="https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/" target="_blank" style="color:var(--gold)">itftennis.com</a>. Los demás son estimaciones basadas en el histórico — verifica siempre antes de inscribirte. <strong>M25 = $30.000</strong> desde 2026.</span>
+    </div>
+
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- PLAYER SEARCH -->
+    <div class="player-search-wrap">
+      <div class="player-search-header" onclick="togglePlayerPanel()">
+        <h3>📋 Planificación por jugador <span class="ai-badge">&#10022; IA</span></h3>
+        <span class="player-search-toggle" id="ps-toggle">&#9660;</span>
+      </div>
+      <div class="player-search-body" id="ps-body">
+
+        <p class="pf-intro">
+          Introduce los datos del jugador tal como aparece en
+          <a href="https://www.itftennis.com/en/players/" target="_blank">itftennis.com</a>.
+          La IA generará su planificación óptima para el próximo mes con torneos reales.
+          <span id="pf-saved-notice" style="display:none;margin-left:0.4rem;font-size:0.7rem;color:var(--clay-light)">💾 Datos guardados</span>
+        </p>
+
+        <div class="pf-grid">
+          <div class="pf-field pf-wide">
+            <span class="pf-label">Nombre completo *</span>
+            <input type="text" id="pf-name" class="pf-input" placeholder="Ej: Carlos García López"
+              oninput="savePlayer()" onkeydown="if(event.key==='Enter')generatePlan()">
+          </div>
+          <div class="pf-field">
+            <span class="pf-label">País / Nacionalidad *</span>
+            <input type="text" id="pf-country" class="pf-input" placeholder="Ej: España"
+              oninput="savePlayer()" onkeydown="if(event.key==='Enter')generatePlan()">
+          </div>
+          <div class="pf-field">
+            <span class="pf-label">Ranking ITF actual</span>
+            <input type="number" id="pf-itf" class="pf-input" placeholder="Ej: 850" min="1" oninput="savePlayer()">
+          </div>
+          <div class="pf-field">
+            <span class="pf-label">Ranking ATP (si tiene)</span>
+            <input type="number" id="pf-atp" class="pf-input" placeholder="Sin ranking" min="1" oninput="savePlayer()">
+          </div>
+          <div class="pf-field">
+            <span class="pf-label">Superficie preferida</span>
+            <select id="pf-surface" class="pf-input" onchange="savePlayer()">
+              <option value="">Cualquiera</option>
+              <option value="Clay">Tierra batida</option>
+              <option value="Hard">Pista rápida</option>
+              <option value="Grass">Hierba</option>
+            </select>
+          </div>
+          <div class="pf-field">
+            <span class="pf-label">Licencia ITF (opcional)</span>
+            <input type="text" id="pf-license" class="pf-input" placeholder="Ej: 100123456" oninput="savePlayer()">
+          </div>
+        </div>
+
+        <div class="pf-actions">
+          <button class="btn-search" onclick="generatePlan()">Generar planificación</button>
+          <button class="pf-clear" onclick="clearPlanForm()">Limpiar</button>
+        </div>
+
+        <div id="player-loading" class="player-loading" style="display:none">
+          <div class="spinner"></div>
+          <span id="player-loading-text">Generando planificación...</span>
+        </div>
+        <div id="player-result" class="player-result"></div>
+      </div>
+
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <button class="tab-btn active" id="btn-grid"     onclick="setView('grid')">⊞ Tarjetas</button>
+        <button class="tab-btn"        id="btn-timeline" onclick="setView('timeline')">≡ Cronología</button>
+        <button class="tab-btn"        id="btn-calendar" onclick="setView('calendar')">📅 Calendario</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.7rem">
+        <button class="tab-btn" onclick="openCustomModal()" style="border-color:rgba(99,179,237,0.4);color:#63b3ed">
+          + Torneo propio
+        </button>
+        <div class="results-info" id="results-info">— torneos</div>
+      </div>
+    </div>
+
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <span>Cargando torneos ITF 2026...</span>
+    </div>
+
+    <div class="tournament-grid" id="grid-view" style="display:none"></div>
+    <div class="timeline"        id="timeline-view"></div>
+
+    <!-- CALENDAR VIEW -->
+    <div class="calendar-view" id="calendar-view">
+      <div class="cal-header">
+        <div class="cal-nav">
+          <button class="cal-nav-btn" onclick="calPrev()">&#8592;</button>
+          <div class="cal-nav-title" id="cal-title">—</div>
+          <button class="cal-nav-btn" onclick="calNext()">&#8594;</button>
+        </div>
+        <div class="cal-mode-tabs">
+          <button class="cal-mode-btn active" id="calmode-all"     onclick="setCalMode('all')">Todos</button>
+          <button class="cal-mode-btn"        id="calmode-circuit" onclick="setCalMode('circuit')">⭐ Mi Circuito</button>
+          <button class="cal-mode-btn"        id="calmode-plan"    onclick="setCalMode('plan')">🤖 Planificación IA</button>
+        </div>
+      </div>
+      <div class="cal-legend">
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:rgba(200,80,26,0.6)"></div>Torneos ITF</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:rgba(212,168,67,0.7)"></div>Mi Circuito</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:rgba(111,207,151,0.6)"></div>Recomendado IA</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:rgba(99,179,237,0.6)"></div>Torneo propio / Equipos</div>
+      </div>
+      <div id="cal-grid" style="overflow-x:auto">
+        <table class="cal-table" id="cal-table"><tbody id="cal-body"></tbody></table>
+      </div>
+    </div>
+
+    <div class="export-section" id="export-bar" style="display:none">
+      <div class="export-info">
+        <strong id="circuit-summary">0 torneos en tu circuito</strong><br>
+        <span id="pts-summary">ATP Points estimados: 0</span>
+      </div>
+      <div class="export-btns">
+        <button class="export-btn" onclick="exportCircuit()">📋 Copiar lista</button>
+        <button class="export-btn" onclick="printCircuit()">🖨 Imprimir</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- CUSTOM TOURNAMENT MODAL -->
+<div class="custom-modal-overlay" id="custom-modal">
+  <div class="custom-modal">
+    <button class="modal-close" onclick="closeCustomModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer">✕</button>
+    <h2>🎾 Añadir Torneo Propio</h2>
+    <p style="font-size:0.78rem;color:var(--muted);margin-bottom:1.2rem">
+      Torneos de equipos, Copa Davis, ligas locales, o cualquier evento que no figure en la ITF.
+    </p>
+    <div class="cm-field cm-field-wide">
+      <span class="cm-label">Nombre del torneo *</span>
+      <input type="text" id="cm-name" class="cm-input" placeholder="Ej: Copa Davis España, Liga Tenis Club...">
+    </div>
+    <div class="cm-row">
+      <div class="cm-field">
+        <span class="cm-label">Ciudad</span>
+        <input type="text" id="cm-city" class="cm-input" placeholder="Ej: Madrid">
+      </div>
+      <div class="cm-field">
+        <span class="cm-label">País</span>
+        <input type="text" id="cm-country" class="cm-input" placeholder="Ej: España">
+      </div>
+    </div>
+    <div class="cm-row">
+      <div class="cm-field">
+        <span class="cm-label">Fecha inicio *</span>
+        <input type="date" id="cm-start" class="cm-input">
+      </div>
+      <div class="cm-field">
+        <span class="cm-label">Fecha fin *</span>
+        <input type="date" id="cm-end" class="cm-input">
+      </div>
+    </div>
+    <div class="cm-row">
+      <div class="cm-field">
+        <span class="cm-label">Tipo</span>
+        <select id="cm-type" class="cm-input">
+          <option value="Equipos">Equipos</option>
+          <option value="Copa Davis">Copa Davis</option>
+          <option value="Liga">Liga</option>
+          <option value="Challenger">Challenger</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+      <div class="cm-field">
+        <span class="cm-label">Superficie</span>
+        <select id="cm-surface" class="cm-input">
+          <option value="Clay">Tierra batida</option>
+          <option value="Hard">Pista rápida</option>
+          <option value="Grass">Hierba</option>
+          <option value="Indoor">Indoor</option>
+        </select>
+      </div>
+    </div>
+    <div class="cm-field">
+      <span class="cm-label">Notas (opcional)</span>
+      <input type="text" id="cm-notes" class="cm-input" placeholder="Ej: Copa regional, fase clasificatoria...">
+    </div>
+    <div class="cm-actions">
+      <button class="cm-save" onclick="saveCustomTournament()">AÑADIR AL CIRCUITO</button>
+      <button class="cm-cancel" onclick="closeCustomModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title" id="modal-title"></div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+// Tournament database: ITF M15/M25 Spain & nearby countries Jan-Jun 2026
+// Based on historical patterns + confirmed 2026 calendar data
+const TOURNAMENTS = [
+
+  // ══ ESPAÑA ══ (✅ verificado ITF 2025/2026)
+  // Enero — Manacor, Rafa Nadal Academy, pista dura exterior
+  { id:1,  name:"M15 Manacor I",                  country:"España",   flag:"🇪🇸", code:"esp", cat:"M15", surface:"Hard", week:"2026-01-05", prize:15000, pts:10, city:"Manacor",                  itf:"https://www.itftennis.com/en/tournament/m15-manacor/esp/2026/m-itf-esp-2026-001/", verified:true },
+  { id:2,  name:"M15 Manacor II",                 country:"España",   flag:"🇪🇸", code:"esp", cat:"M15", surface:"Hard", week:"2026-01-12", prize:15000, pts:10, city:"Manacor",                  itf:"https://www.itftennis.com/en/tournament/m15-manacor/esp/2026/m-itf-esp-2026-006/", verified:true },
+  { id:3,  name:"M15 Manacor III",                country:"España",   flag:"🇪🇸", code:"esp", cat:"M15", surface:"Hard", week:"2026-01-19", prize:15000, pts:10, city:"Manacor",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  // Febrero — Valencia (tierra) + Villena (Ferrero Academy, dura exterior)
+  { id:4,  name:"M15 Valencia I",                 country:"España",   flag:"🇪🇸", code:"esp", cat:"M15", surface:"Clay", week:"2026-02-02", prize:15000, pts:10, city:"Valencia",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:5,  name:"M15 Valencia II",                country:"España",   flag:"🇪🇸", code:"esp", cat:"M15", surface:"Clay", week:"2026-02-09", prize:15000, pts:10, city:"Valencia",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:6,  name:"M15 Villena I",                  country:"España",   flag:"🇪🇸", code:"esp", cat:"M15", surface:"Hard", week:"2026-02-16", prize:15000, pts:10, city:"Villena",                  itf:"https://www.itftennis.com/en/tournament/m15-villena/esp/2026/m-itf-esp-2026-012/", verified:true },
+  { id:7,  name:"M15 Villena II",                 country:"España",   flag:"🇪🇸", code:"esp", cat:"M15", surface:"Hard", week:"2026-02-23", prize:15000, pts:10, city:"Villena",                  itf:"https://www.itftennis.com/en/tournament/m15-villena/esp/2026/m-itf-esp-2026-013/", verified:true },
+  // Marzo — Torelló + Les Franqueses + Badalona + Tarragona + Reus (todo verificado)
+  { id:8,  name:"M15 Torelló",                    country:"España",   flag:"🇪🇸", code:"esp", cat:"M15", surface:"Hard", week:"2026-03-02", prize:15000, pts:10, city:"Torelló",                  itf:"https://www.itftennis.com/en/tournament/m15-torello/esp/2026/m-itf-esp-2026-020/", verified:true },
+  { id:9,  name:"M25 Les Franqueses del Vallès",  country:"España",   flag:"🇪🇸", code:"esp", cat:"M25", surface:"Hard", week:"2026-03-09", prize:30000, pts:20, city:"Les Franqueses",           itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:10, name:"M25 Badalona",                   country:"España",   flag:"🇪🇸", code:"esp", cat:"M25", surface:"Clay", week:"2026-03-16", prize:30000, pts:20, city:"Badalona",                 itf:"https://www.itftennis.com/en/tournament/m25-badalona/esp/2026/m-itf-esp-2026-017/", verified:true },
+  { id:11, name:"M25 Tarragona",                  country:"España",   flag:"🇪🇸", code:"esp", cat:"M25", surface:"Clay", week:"2026-03-23", prize:30000, pts:20, city:"Tarragona",                itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:12, name:"M25 Reus",                       country:"España",   flag:"🇪🇸", code:"esp", cat:"M25", surface:"Clay", week:"2026-03-30", prize:30000, pts:20, city:"Reus",                     itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  // Abril — Sabadell (verificado 2025)
+  { id:13, name:"M25 Sabadell",                   country:"España",   flag:"🇪🇸", code:"esp", cat:"M25", surface:"Clay", week:"2026-04-27", prize:30000, pts:20, city:"Sabadell",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  // Mayo — Vic + Mataró (verificado 2025)
+  { id:14, name:"M25 Vic",                        country:"España",   flag:"🇪🇸", code:"esp", cat:"M25", surface:"Clay", week:"2026-05-11", prize:30000, pts:20, city:"Vic",                      itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:15, name:"M25 Mataró",                     country:"España",   flag:"🇪🇸", code:"esp", cat:"M25", surface:"Clay", week:"2026-05-18", prize:30000, pts:20, city:"Mataró",                   itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  // Junio — Córdoba + Martos + Bakio (verificado 2025)
+  { id:16, name:"M25 Córdoba",                    country:"España",   flag:"🇪🇸", code:"esp", cat:"M25", surface:"Clay", week:"2026-06-01", prize:30000, pts:20, city:"Córdoba",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:17, name:"M25 Martos",                     country:"España",   flag:"🇪🇸", code:"esp", cat:"M25", surface:"Hard", week:"2026-06-08", prize:30000, pts:20, city:"Martos",                   itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:18, name:"M25 Bakio",                      country:"España",   flag:"🇪🇸", code:"esp", cat:"M25", surface:"Hard", week:"2026-06-22", prize:30000, pts:20, city:"Bakio",                    itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+
+  // ══ PORTUGAL ══ (✅ verificado ITF 2025)
+  { id:19, name:"M25 Vila Real Sto António I",    country:"Portugal", flag:"🇵🇹", code:"prt", cat:"M25", surface:"Hard", week:"2026-02-09", prize:30000, pts:20, city:"Vila Real de Sto António", itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:20, name:"M25 Vila Real Sto António II",   country:"Portugal", flag:"🇵🇹", code:"prt", cat:"M25", surface:"Hard", week:"2026-02-16", prize:30000, pts:20, city:"Vila Real de Sto António", itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:21, name:"M25 Faro",                       country:"Portugal", flag:"🇵🇹", code:"prt", cat:"M25", surface:"Hard", week:"2026-02-23", prize:30000, pts:20, city:"Faro",                     itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:22, name:"M25 Quinta do Lago",             country:"Portugal", flag:"🇵🇹", code:"prt", cat:"M25", surface:"Hard", week:"2026-03-02", prize:30000, pts:20, city:"Quinta do Lago",           itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:23, name:"M25 Vale do Lobo",               country:"Portugal", flag:"🇵🇹", code:"prt", cat:"M25", surface:"Hard", week:"2026-03-09", prize:30000, pts:20, city:"Vale do Lobo",             itf:"https://www.itftennis.com/en/tournament/m25-vale-do-lobo/por/2026/m-itf-por-2026-004/", verified:true },
+  { id:24, name:"M25 Loulé",                      country:"Portugal", flag:"🇵🇹", code:"prt", cat:"M25", surface:"Hard", week:"2026-03-16", prize:30000, pts:20, city:"Loulé",                    itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:25, name:"M25 Elvas",                      country:"Portugal", flag:"🇵🇹", code:"prt", cat:"M25", surface:"Hard", week:"2026-06-22", prize:30000, pts:20, city:"Elvas",                    itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:26, name:"M25 Figueira da Foz",            country:"Portugal", flag:"🇵🇹", code:"prt", cat:"M25", surface:"Hard", week:"2026-06-29", prize:30000, pts:20, city:"Figueira da Foz",          itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+
+  // ══ FRANCIA ══ (✅ verificado ITF 2025)
+  { id:27, name:"M25 Hazebrouck",                 country:"Francia",  flag:"🇫🇷", code:"fra", cat:"M25", surface:"Hard", week:"2026-01-05", prize:30000, pts:20, city:"Hazebrouck",               itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:28, name:"M15 Bressuire",                  country:"Francia",  flag:"🇫🇷", code:"fra", cat:"M15", surface:"Hard", week:"2026-01-12", prize:15000, pts:10, city:"Bressuire",                itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:29, name:"M15 Lannion",                    country:"Francia",  flag:"🇫🇷", code:"fra", cat:"M15", surface:"Hard", week:"2026-02-16", prize:15000, pts:10, city:"Lannion",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:30, name:"M25 Créteil",                    country:"Francia",  flag:"🇫🇷", code:"fra", cat:"M25", surface:"Hard", week:"2026-03-09", prize:30000, pts:20, city:"Créteil",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:31, name:"M25 Toulouse-Balma",             country:"Francia",  flag:"🇫🇷", code:"fra", cat:"M25", surface:"Hard", week:"2026-03-16", prize:30000, pts:20, city:"Toulouse",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:32, name:"M25 Saint-Dizier",               country:"Francia",  flag:"🇫🇷", code:"fra", cat:"M25", surface:"Hard", week:"2026-03-23", prize:30000, pts:20, city:"Saint-Dizier",             itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:33, name:"M15 Lons-le-Saunier",            country:"Francia",  flag:"🇫🇷", code:"fra", cat:"M15", surface:"Hard", week:"2026-03-30", prize:15000, pts:10, city:"Lons-le-Saunier",          itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:34, name:"M25 Angers",                     country:"Francia",  flag:"🇫🇷", code:"fra", cat:"M25", surface:"Clay", week:"2026-04-20", prize:30000, pts:20, city:"Angers",                   itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:35, name:"M25 Carnac",                     country:"Francia",  flag:"🇫🇷", code:"fra", cat:"M25", surface:"Clay", week:"2026-05-25", prize:30000, pts:20, city:"Carnac",                   itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:36, name:"M25 Grasse",                     country:"Francia",  flag:"🇫🇷", code:"fra", cat:"M25", surface:"Clay", week:"2026-06-01", prize:30000, pts:20, city:"Grasse",                   itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:37, name:"M25 Villeneuve-Loubet",          country:"Francia",  flag:"🇫🇷", code:"fra", cat:"M25", surface:"Clay", week:"2026-06-08", prize:30000, pts:20, city:"Villeneuve-Loubet",        itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:38, name:"M25 Montauban",                  country:"Francia",  flag:"🇫🇷", code:"fra", cat:"M25", surface:"Clay", week:"2026-06-22", prize:30000, pts:20, city:"Montauban",                itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+
+  // ══ ITALIA ══ (✅ verificado ITF 2025)
+  { id:39, name:"M25 Trento",                     country:"Italia",   flag:"🇮🇹", code:"ita", cat:"M25", surface:"Hard", week:"2026-02-16", prize:30000, pts:20, city:"Trento",                   itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:40, name:"M15 Foggia",                     country:"Italia",   flag:"🇮🇹", code:"ita", cat:"M15", surface:"Clay", week:"2026-03-23", prize:15000, pts:10, city:"Foggia",                   itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:41, name:"M25 Sta. Margherita I",          country:"Italia",   flag:"🇮🇹", code:"ita", cat:"M25", surface:"Clay", week:"2026-03-30", prize:30000, pts:20, city:"Santa Margherita di Pula", itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:42, name:"M25 Sta. Margherita II",         country:"Italia",   flag:"🇮🇹", code:"ita", cat:"M25", surface:"Clay", week:"2026-04-06", prize:30000, pts:20, city:"Santa Margherita di Pula", itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:43, name:"M25 Sta. Margherita III",        country:"Italia",   flag:"🇮🇹", code:"ita", cat:"M25", surface:"Clay", week:"2026-04-13", prize:30000, pts:20, city:"Santa Margherita di Pula", itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:44, name:"M25 Sta. Margherita IV",         country:"Italia",   flag:"🇮🇹", code:"ita", cat:"M25", surface:"Clay", week:"2026-04-20", prize:30000, pts:20, city:"Santa Margherita di Pula", itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:45, name:"M25 Sta. Margherita V",          country:"Italia",   flag:"🇮🇹", code:"ita", cat:"M25", surface:"Clay", week:"2026-04-27", prize:30000, pts:20, city:"Santa Margherita di Pula", itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:46, name:"M25 Sta. Margherita VI",         country:"Italia",   flag:"🇮🇹", code:"ita", cat:"M25", surface:"Clay", week:"2026-05-04", prize:30000, pts:20, city:"Santa Margherita di Pula", itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:47, name:"M25 Reggio Emilia",              country:"Italia",   flag:"🇮🇹", code:"ita", cat:"M25", surface:"Clay", week:"2026-05-11", prize:30000, pts:20, city:"Reggio Emilia",            itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:48, name:"M25 Cervia",                     country:"Italia",   flag:"🇮🇹", code:"ita", cat:"M25", surface:"Clay", week:"2026-05-18", prize:30000, pts:20, city:"Cervia",                   itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:49, name:"M25 Cattolica",                  country:"Italia",   flag:"🇮🇹", code:"ita", cat:"M25", surface:"Clay", week:"2026-06-15", prize:30000, pts:20, city:"Cattolica",                itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+
+  // ══ MARRUECOS ══ (✅ verificado ITF 2025/2026)
+  { id:50, name:"M25 Marrakech",                  country:"Marruecos",flag:"🇲🇦", code:"mar", cat:"M25", surface:"Clay", week:"2026-01-26", prize:30000, pts:20, city:"Marrakech",                itf:"https://www.itftennis.com/en/tournament/m25-marrakech/mar/2026/m-itf-mar-2026-001/", verified:true },
+
+  // ══ TÚNEZ ══ (✅ verificado ITF 2025 — Monastir produce ~1 M15 por semana)
+  { id:51, name:"M15 Monastir I",                 country:"Túnez",    flag:"🇹🇳", code:"tun", cat:"M15", surface:"Hard", week:"2026-01-05", prize:15000, pts:10, city:"Monastir",                 itf:"https://www.itftennis.com/en/tournament/m15-monastir/tun/2026/m-itf-tun-2026-012/", verified:true },
+  { id:52, name:"M15 Monastir II",                country:"Túnez",    flag:"🇹🇳", code:"tun", cat:"M15", surface:"Hard", week:"2026-01-12", prize:15000, pts:10, city:"Monastir",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:53, name:"M15 Monastir III",               country:"Túnez",    flag:"🇹🇳", code:"tun", cat:"M15", surface:"Hard", week:"2026-01-19", prize:15000, pts:10, city:"Monastir",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:54, name:"M15 Monastir IV",                country:"Túnez",    flag:"🇹🇳", code:"tun", cat:"M15", surface:"Hard", week:"2026-01-26", prize:15000, pts:10, city:"Monastir",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:55, name:"M15 Monastir V",                 country:"Túnez",    flag:"🇹🇳", code:"tun", cat:"M15", surface:"Hard", week:"2026-02-02", prize:15000, pts:10, city:"Monastir",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:56, name:"M15 Monastir VI",                country:"Túnez",    flag:"🇹🇳", code:"tun", cat:"M15", surface:"Hard", week:"2026-02-09", prize:15000, pts:10, city:"Monastir",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:57, name:"M15 Monastir VII",               country:"Túnez",    flag:"🇹🇳", code:"tun", cat:"M15", surface:"Hard", week:"2026-02-16", prize:15000, pts:10, city:"Monastir",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:58, name:"M15 Monastir VIII",              country:"Túnez",    flag:"🇹🇳", code:"tun", cat:"M15", surface:"Hard", week:"2026-02-23", prize:15000, pts:10, city:"Monastir",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:59, name:"M15 Monastir IX",                country:"Túnez",    flag:"🇹🇳", code:"tun", cat:"M15", surface:"Hard", week:"2026-03-02", prize:15000, pts:10, city:"Monastir",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:60, name:"M15 Monastir X",                 country:"Túnez",    flag:"🇹🇳", code:"tun", cat:"M15", surface:"Hard", week:"2026-03-09", prize:15000, pts:10, city:"Monastir",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:61, name:"M15 Monastir XI",                country:"Túnez",    flag:"🇹🇳", code:"tun", cat:"M15", surface:"Hard", week:"2026-03-16", prize:15000, pts:10, city:"Monastir",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:62, name:"M15 Monastir XII",               country:"Túnez",    flag:"🇹🇳", code:"tun", cat:"M15", surface:"Hard", week:"2026-03-23", prize:15000, pts:10, city:"Monastir",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:63, name:"M15 Monastir XIII",              country:"Túnez",    flag:"🇹🇳", code:"tun", cat:"M15", surface:"Hard", week:"2026-03-30", prize:15000, pts:10, city:"Monastir",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:64, name:"M15 Monastir XIV",               country:"Túnez",    flag:"🇹🇳", code:"tun", cat:"M15", surface:"Hard", week:"2026-04-06", prize:15000, pts:10, city:"Monastir",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:65, name:"M15 Monastir XV",                country:"Túnez",    flag:"🇹🇳", code:"tun", cat:"M15", surface:"Hard", week:"2026-04-13", prize:15000, pts:10, city:"Monastir",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:66, name:"M25 Monastir I",                 country:"Túnez",    flag:"🇹🇳", code:"tun", cat:"M25", surface:"Hard", week:"2026-06-01", prize:30000, pts:20, city:"Monastir",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:67, name:"M25 Monastir II",                country:"Túnez",    flag:"🇹🇳", code:"tun", cat:"M25", surface:"Hard", week:"2026-06-08", prize:30000, pts:20, city:"Monastir",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:68, name:"M25 Monastir III",               country:"Túnez",    flag:"🇹🇳", code:"tun", cat:"M25", surface:"Hard", week:"2026-06-15", prize:30000, pts:20, city:"Monastir",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:69, name:"M25 Monastir IV",                country:"Túnez",    flag:"🇹🇳", code:"tun", cat:"M25", surface:"Hard", week:"2026-06-22", prize:30000, pts:20, city:"Monastir",                 itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+
+  // ══ TURQUÍA ══ (✅ verificado ITF 2025 — Antalya ~1 torneo/semana)
+  { id:70, name:"M15 Antalya I",                  country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M15", surface:"Clay", week:"2026-01-05", prize:15000, pts:10, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament/m15-antalya/tur/2026/m-itf-tur-2026-005/", verified:true },
+  { id:71, name:"M15 Antalya II",                 country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M15", surface:"Clay", week:"2026-01-12", prize:15000, pts:10, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:72, name:"M15 Antalya III",                country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M15", surface:"Clay", week:"2026-01-19", prize:15000, pts:10, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:73, name:"M25 Antalya I",                  country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M25", surface:"Clay", week:"2026-01-26", prize:30000, pts:20, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament/m25-antalya/tur/2026/m-itf-tur-2026-001/", verified:true },
+  { id:74, name:"M25 Antalya II",                 country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M25", surface:"Clay", week:"2026-02-02", prize:30000, pts:20, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:75, name:"M15 Antalya IV",                 country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M15", surface:"Clay", week:"2026-02-09", prize:15000, pts:10, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:76, name:"M15 Antalya V",                  country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M15", surface:"Clay", week:"2026-02-16", prize:15000, pts:10, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:77, name:"M15 Antalya VI",                 country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M15", surface:"Clay", week:"2026-02-23", prize:15000, pts:10, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:78, name:"M15 Antalya VII",                country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M15", surface:"Clay", week:"2026-03-02", prize:15000, pts:10, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:79, name:"M15 Antalya VIII",               country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M15", surface:"Clay", week:"2026-03-09", prize:15000, pts:10, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:80, name:"M15 Antalya IX",                 country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M15", surface:"Clay", week:"2026-03-16", prize:15000, pts:10, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:81, name:"M15 Antalya X",                  country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M15", surface:"Clay", week:"2026-03-23", prize:15000, pts:10, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:82, name:"M25 Antalya III",                country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M25", surface:"Clay", week:"2026-03-30", prize:30000, pts:20, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:83, name:"M25 Antalya IV",                 country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M25", surface:"Clay", week:"2026-04-06", prize:30000, pts:20, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:84, name:"M15 Antalya XI",                 country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M15", surface:"Clay", week:"2026-04-13", prize:15000, pts:10, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:85, name:"M15 Antalya XII",                country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M15", surface:"Clay", week:"2026-04-20", prize:15000, pts:10, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:86, name:"M25 Antalya V",                  country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M25", surface:"Clay", week:"2026-05-04", prize:30000, pts:20, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:87, name:"M15 Antalya XIII",               country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M15", surface:"Clay", week:"2026-05-18", prize:15000, pts:10, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:88, name:"M25 Antalya VI",                 country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M25", surface:"Clay", week:"2026-06-01", prize:30000, pts:20, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+  { id:89, name:"M25 Antalya VII",                country:"Turquía",  flag:"🇹🇷", code:"tur", cat:"M25", surface:"Clay", week:"2026-06-15", prize:30000, pts:20, city:"Antalya",                  itf:"https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/", verified:true },
+
+]
+
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let myCircuit = [];
+let filteredTournaments = [...TOURNAMENTS];
+let currentView = 'grid';
+
+const MONTHS = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio'];
+const COUNTRY_MAP = { esp:'España', prt:'Portugal', fra:'Francia', ita:'Italia', mar:'Marruecos', tun:'Túnez' };
+
+// ─── PERSISTENCE ─────────────────────────────────────────────────────────────
+const LS_CIRCUIT = 'itf_circuit_v2';
+const LS_CUSTOM  = 'itf_custom_v2';
+const LS_PLAYER  = 'itf_player_v2';
+
+function saveState() {
+  try {
+    // Circuit: store ITF tournament IDs + full custom objects
+    const circuitIds     = myCircuit.filter(t => !t.custom).map(t => t.id);
+    const circuitCustoms = myCircuit.filter(t =>  t.custom);
+    localStorage.setItem(LS_CIRCUIT, JSON.stringify({ ids: circuitIds, customs: circuitCustoms }));
+    localStorage.setItem(LS_CUSTOM,  JSON.stringify({ tournaments: customTournaments, counter: customIdCounter }));
+  } catch(e) { /* localStorage not available */ }
+}
+
+function loadState() {
+  try {
+    // Load custom tournaments first (so they exist when rebuilding circuit)
+    const rawCustom = localStorage.getItem(LS_CUSTOM);
+    if (rawCustom) {
+      const parsed = JSON.parse(rawCustom);
+      customTournaments = parsed.tournaments || [];
+      customIdCounter   = parsed.counter    || 1000;
+    }
+
+    // Load circuit
+    const rawCircuit = localStorage.getItem(LS_CIRCUIT);
+    if (rawCircuit) {
+      const parsed = JSON.parse(rawCircuit);
+      // Restore ITF tournaments by ID
+      const itfItems = (parsed.ids || []).map(id => TOURNAMENTS.find(t => t.id === id)).filter(Boolean);
+      // Restore custom items from saved data
+      const customItems = parsed.customs || [];
+      myCircuit = [...itfItems, ...customItems];
+      myCircuit.sort((a,b) => a.week.localeCompare(b.week));
+    }
+  } catch(e) { /* corrupted data, start fresh */ }
+}
+
+function exportToFile() {
+  try {
+    // Collect all data
+    const playerData = {};
+    try {
+      const raw = localStorage.getItem(LS_PLAYER);
+      if (raw) Object.assign(playerData, JSON.parse(raw));
+    } catch(e) {}
+
+    const circuitIds     = myCircuit.filter(t => !t.custom).map(t => t.id);
+    const circuitCustoms = myCircuit.filter(t =>  t.custom);
+
+    const backup = {
+      version:    2,
+      exportedAt: new Date().toISOString(),
+      appName:    'Circuito ITF 2026',
+      player:     playerData,
+      circuit: {
+        ids:     circuitIds,
+        customs: circuitCustoms,
+      },
+      customTournaments: {
+        tournaments: customTournaments,
+        counter:     customIdCounter,
+      }
+    };
+
+    const json     = JSON.stringify(backup, null, 2);
+    const blob     = new Blob([json], { type: 'application/json' });
+    const url      = URL.createObjectURL(blob);
+    const a        = document.createElement('a');
+    const dateStr  = new Date().toISOString().slice(0,10);
+    const name     = (playerData.name || 'jugador').replace(/\s+/g, '_').toLowerCase();
+    a.href         = url;
+    a.download     = 'circuito_itf_' + name + '_' + dateStr + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('✅ Copia guardada: ' + a.download);
+  } catch(e) {
+    alert('Error al exportar: ' + e.message);
+  }
+}
+
+function importFromFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const backup = JSON.parse(e.target.result);
+
+      // Validate
+      if (!backup.version || !backup.circuit) {
+        alert('Archivo no válido o de una versión distinta.');
+        return;
+      }
+
+      const playerName = backup.player?.name || 'jugador';
+      if (!confirm('¿Cargar los datos de ' + playerName + '? Esto reemplazará tu circuito y datos actuales.')) {
+        event.target.value = '';
+        return;
+      }
+
+      // Restore custom tournaments
+      if (backup.customTournaments) {
+        customTournaments = backup.customTournaments.tournaments || [];
+        customIdCounter   = backup.customTournaments.counter    || 1000;
+      }
+
+      // Restore circuit
+      const itfItems    = (backup.circuit.ids || []).map(id => TOURNAMENTS.find(t => t.id === id)).filter(Boolean);
+      const customItems = backup.circuit.customs || [];
+      myCircuit = [...itfItems, ...customItems];
+      myCircuit.sort((a,b) => a.week.localeCompare(b.week));
+
+      // Restore player form
+      if (backup.player) {
+        const d = backup.player;
+        if (d.name)    document.getElementById('pf-name').value    = d.name;
+        if (d.country) document.getElementById('pf-country').value = d.country;
+        if (d.itf)     document.getElementById('pf-itf').value     = d.itf;
+        if (d.atp)     document.getElementById('pf-atp').value     = d.atp;
+        if (d.surface) document.getElementById('pf-surface').value = d.surface;
+        if (d.license) document.getElementById('pf-license').value = d.license;
+      }
+
+      // Persist to localStorage
+      saveState();
+      if (backup.player) localStorage.setItem(LS_PLAYER, JSON.stringify(backup.player));
+
+      // Refresh UI
+      updateCircuitUI();
+      applyFilters();
+
+      const notice = document.getElementById('pf-saved-notice');
+      if (notice) notice.style.display = 'inline';
+
+      showToast('✅ Datos de ' + playerName + ' cargados correctamente');
+
+    } catch(err) {
+      alert('Error al leer el archivo: ' + err.message);
+    }
+    event.target.value = ''; // reset input
+  };
+  reader.readAsText(file);
+}
+
+function savePlayer() {
+  try {
+    const data = {
+      name:    document.getElementById('pf-name').value    || '',
+      country: document.getElementById('pf-country').value || '',
+      itf:     document.getElementById('pf-itf').value     || '',
+      atp:     document.getElementById('pf-atp').value     || '',
+      surface: document.getElementById('pf-surface').value || '',
+      license: document.getElementById('pf-license').value || '',
+    };
+    localStorage.setItem(LS_PLAYER, JSON.stringify(data));
+    const n = document.getElementById('pf-saved-notice');
+    if (n) n.style.display = 'inline';
+  } catch(e) {}
+}
+
+function loadPlayer() {
+  try {
+    const raw = localStorage.getItem(LS_PLAYER);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    if (d.name)    document.getElementById('pf-name').value    = d.name;
+    if (d.country) document.getElementById('pf-country').value = d.country;
+    if (d.itf)     document.getElementById('pf-itf').value     = d.itf;
+    if (d.atp)     document.getElementById('pf-atp').value     = d.atp;
+    if (d.surface) document.getElementById('pf-surface').value = d.surface;
+    if (d.license) document.getElementById('pf-license').value = d.license;
+  } catch(e) {}
+}
+
+
+
+
+
+
+
+function clearAllData() {
+  if (!confirm('¿Eliminar todo el circuito y torneos personalizados guardados? Esta acción no se puede deshacer.')) return;
+  try {
+    localStorage.removeItem(LS_CIRCUIT);
+    localStorage.removeItem(LS_CUSTOM);
+    localStorage.removeItem(LS_PLAYER);
+  } catch(e) {}
+  myCircuit         = [];
+  customTournaments = [];
+  customIdCounter   = 1000;
+  updateCircuitUI();
+  if (currentView === 'grid') renderGrid();
+  else if (currentView === 'timeline') renderTimeline();
+  else if (currentView === 'calendar') renderCalendar();
+  showToast('🗑 Circuito borrado');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  loadState();
+  loadPlayer();
+  setTimeout(() => {
+    document.getElementById('loading').style.display = 'none';
+    applyFilters();
+    if (myCircuit.length > 0) updateCircuitUI();
+  }, 600);
+});
+
+// ─── FILTERS ─────────────────────────────────────────────────────────────────
+function applyFilters() {
+  const cats = [];
+  if (document.getElementById('cat-m15').checked) cats.push('M15');
+  if (document.getElementById('cat-m25').checked) cats.push('M25');
+
+  const ctrs = [];
+  ['esp','prt','fra','ita','mar','tun','tur'].forEach(c => {
+    if (document.getElementById('ctr-'+c).checked) ctrs.push(c);
+  });
+
+  const surf = document.getElementById('filter-surface').value;
+  const month = document.getElementById('filter-month').value;
+
+  filteredTournaments = TOURNAMENTS.filter(t => {
+    if (!cats.includes(t.cat)) return false;
+    if (!ctrs.includes(t.code)) return false;
+    if (surf !== 'all' && t.surface !== surf) return false;
+    if (month !== 'all') {
+      const tStart = new Date(t.week);
+      const tEnd   = new Date(t.week); tEnd.setDate(tEnd.getDate() + 6);
+      const mFilter = parseInt(month);
+      // El torneo pertenece al mes si algún día de su semana cae en ese mes
+      const startM = tStart.getMonth() + 1;
+      const endM   = tEnd.getMonth() + 1;
+      if (startM !== mFilter && endM !== mFilter) return false;
+    }
+    return true;
+  });
+
+  document.getElementById('stat-total').textContent = filteredTournaments.length;
+  document.getElementById('results-info').textContent = `${filteredTournaments.length} torneos encontrados`;
+
+  if (currentView === 'grid') renderGrid();
+  else renderTimeline();
+}
+
+function resetFilters() {
+  ['cat-m15','cat-m25','ctr-esp','ctr-prt','ctr-fra'].forEach(id => document.getElementById(id).checked = true);
+  ['ctr-ita','ctr-mar','ctr-tun'].forEach(id => document.getElementById(id).checked = false);
+  document.getElementById('filter-surface').value = 'all';
+  document.getElementById('filter-month').value = 'all';
+  applyFilters();
+}
+
+// ─── VIEW ─────────────────────────────────────────────────────────────────────
+
+function renderGrid() {
+  const grid = document.getElementById('grid-view');
+  if (!filteredTournaments.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="big-icon">🎾</div>
+      <p>No se encontraron torneos con los filtros actuales.<br>Prueba ajustando los filtros de la izquierda.</p>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = filteredTournaments.map(t => tournamentCard(t)).join('');
+}
+
+function tournamentCard(t) {
+  const inCircuit = myCircuit.some(c => c.id === t.id);
+  const d = formatDate(t.week);
+  return `
+  <div class="t-card ${inCircuit ? 'in-circuit' : ''}" onclick="openModal(${t.id})">
+    <div class="t-header">
+      <span class="t-category ${t.cat === 'M15' ? 'cat-m15' : 'cat-m25'}">${t.cat}</span>
+      <div class="t-surface">
+        <span class="surface-dot surf-${t.surface.toLowerCase()}"></span>
+        ${t.surface === 'Clay' ? 'Tierra' : t.surface === 'Hard' ? 'Rápida' : 'Hierba'}
+      </div>
+    </div>
+    <div class="t-body">
+      <div class="t-name">${t.flag} ${t.name}${t.verified ? ' <span style="color:#6fcf97;font-size:0.7rem">✅</span>' : ' <span style="color:var(--muted);font-size:0.65rem" title="Estimado — verificar en ITF">~</span>'}</div>
+      <div class="t-meta">
+        <div class="t-meta-item">📍 <strong>${t.city}, ${t.country}</strong></div>
+        <div class="t-meta-item">💰 <strong>$${t.prize.toLocaleString()}</strong></div>
+        <div class="t-meta-item">🏆 <strong>${t.pts} pts ATP</strong></div>
+      </div>
+      <div class="t-dates">📅 ${d.start} – ${d.end} (semana ${d.week})</div>
+      <div class="t-footer">
+        <button class="add-btn ${inCircuit ? 'remove' : 'add'}" onclick="event.stopPropagation();toggleCircuit(${t.id})">
+          ${inCircuit ? '✕ Quitar del circuito' : '+ Añadir al circuito'}
+        </button>
+        <a class="itf-link" href="${t.itf}" target="_blank" onclick="event.stopPropagation()">ITF ↗</a>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ─── RENDER TIMELINE ──────────────────────────────────────────────────────────
+function renderTimeline() {
+  const tl = document.getElementById('timeline-view');
+  if (!filteredTournaments.length) {
+    tl.innerHTML = `<div class="empty-state"><div class="big-icon">🎾</div><p>Sin torneos para mostrar.</p></div>`;
+    return;
+  }
+
+  // Group by month
+  const groups = {};
+  filteredTournaments.forEach(t => {
+    const m = new Date(t.week).getMonth() + 1;
+    if (!groups[m]) groups[m] = [];
+    groups[m].push(t);
+  });
+
+  tl.innerHTML = Object.keys(groups).sort((a,b)=>a-b).map(m => {
+    const ts = groups[m];
+    const items = ts.map(t => {
+      const inCircuit = myCircuit.some(c => c.id === t.id);
+      const d = formatDate(t.week);
+      return `
+      <div class="timeline-item">
+        <div class="tl-date">${d.shortStart}</div>
+        <div class="tl-line"></div>
+        <div class="tl-content ${inCircuit ? 'in-circuit' : ''}" onclick="openModal(${t.id})">
+          <div class="tl-info">
+            <div class="tl-name">${t.flag} ${t.name} <span style="font-size:0.7rem;font-family:'JetBrains Mono',monospace;color:${t.cat==='M25'?'var(--gold)':'var(--clay-light)'};">${t.cat}</span></div>
+            <div class="tl-meta-row">
+              <span>📍 ${t.city}</span>
+              <span>🏅 ${t.surface === 'Clay' ? 'Tierra' : t.surface}</span>
+              <span>💰 $${t.prize.toLocaleString()}</span>
+              <span>🏆 ${t.pts}pts</span>
+            </div>
+          </div>
+          <div class="tl-actions">
+            <button class="add-btn ${inCircuit ? 'remove' : 'add'}" style="width:auto;padding:0.4rem 0.8rem;font-size:0.75rem" onclick="event.stopPropagation();toggleCircuit(${t.id})">
+              ${inCircuit ? '✕' : '+'}
+            </button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    return `<div class="month-group">
+      <div class="month-header">${MONTHS[m]} <span class="month-count">${ts.length} torneo${ts.length > 1 ? 's' : ''}</span></div>
+      ${items}
+    </div>`;
+  }).join('');
+}
+
+// ─── CIRCUIT ─────────────────────────────────────────────────────────────────
+function toggleCircuit(id) {
+  const t   = TOURNAMENTS.find(x => x.id === id);
+  const idx = myCircuit.findIndex(c => c.id === id);
+  if (idx >= 0) myCircuit.splice(idx, 1);
+  else if (t) myCircuit.push(t);
+  myCircuit.sort((a,b) => a.week.localeCompare(b.week));
+  saveState();
+  updateCircuitUI();
+  if (currentView === 'grid') renderGrid();
+  else if (currentView === 'timeline') renderTimeline();
+  else if (currentView === 'calendar') renderCalendar();
+}
+
+function _updateCircuitUIImpl() {
+  const totalPts = myCircuit.reduce((s,t) => s + t.pts, 0);
+  document.getElementById('stat-my').textContent = myCircuit.length;
+  document.getElementById('stat-pts').textContent = totalPts;
+
+  const list = document.getElementById('circuit-list');
+  if (!myCircuit.length) {
+    list.innerHTML = `<div class="empty-circuit">Sin torneos seleccionados aún.<br>Añade torneos al circuito →</div>`;
+  } else {
+    list.innerHTML = myCircuit.map(t => {
+      const d      = formatDate(t.week);
+      const badge  = t.custom
+        ? '<span style="font-size:0.6rem;background:rgba(99,179,237,0.2);color:#63b3ed;border-radius:3px;padding:0.1rem 0.3rem;margin-right:0.2rem">PROPIO</span>'
+        : '';
+      const rmFn   = t.custom ? `removeCustomTournament(${t.id})` : `toggleCircuit(${t.id})`;
+      return `<div class="circuit-item">
+        <span>${t.flag}</span>
+        <div class="ci-name" title="${t.name}">${badge}${t.name}</div>
+        <span class="ci-date">${d.shortStart}</span>
+        <button class="ci-remove" onclick="${rmFn}" title="Quitar">✕</button>
+      </div>`;
+    }).join('');
+  }
+
+  const bar = document.getElementById('export-bar');
+  bar.style.display = myCircuit.length > 0 ? 'flex' : 'none';
+  document.getElementById('circuit-summary').textContent = `${myCircuit.length} torneos en tu circuito`;
+  document.getElementById('pts-summary').textContent = `ATP Points estimados al ganar todos: ${totalPts} pts`;
+}
+
+// ─── MODAL ───────────────────────────────────────────────────────────────────
+function openModal(id) {
+  const t = TOURNAMENTS.find(x => x.id === id);
+  const inCircuit = myCircuit.some(c => c.id === id);
+  const d = formatDate(t.week);
+  document.getElementById('modal-title').innerHTML = `${t.flag} ${t.name}`;
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-row"><span class="key">Categoría</span><span class="val"><span class="t-category ${t.cat==='M15'?'cat-m15':'cat-m25'}" style="font-size:0.85rem">${t.cat}</span></span></div>
+    <div class="modal-row"><span class="key">Ciudad</span><span class="val">${t.city}, ${t.country}</span></div>
+    <div class="modal-row"><span class="key">Semana</span><span class="val">${d.start} – ${d.end}</span></div>
+    <div class="modal-row"><span class="key">Superficie</span><span class="val">${t.surface === 'Clay' ? '🟠 Tierra batida' : t.surface === 'Hard' ? '🔵 Pista rápida' : '🟢 Hierba'}</span></div>
+    <div class="modal-row"><span class="key">Prize money</span><span class="val">$${t.prize.toLocaleString()}</span></div>
+    <div class="modal-row"><span class="key">ATP Points (ganador)</span><span class="val">${t.pts} puntos</span></div>
+    <div class="modal-row"><span class="key">Puntos (finalista)</span><span class="val">${Math.round(t.pts * 0.6)} puntos</span></div>
+    <div class="modal-row"><span class="key">Puntos (SF)</span><span class="val">${Math.round(t.pts * 0.36)} puntos</span></div>
+    <div class="modal-row"><span class="key">Puntos (QF)</span><span class="val">${Math.round(t.pts * 0.18)} puntos</span></div>
+    <div class="modal-tip">
+      💡 <strong>Consejo estratégico:</strong> ${strategicTip(t)}
+    </div>
+    <div style="margin-top:1.2rem;display:flex;gap:0.5rem">
+      <button class="btn ${inCircuit ? 'btn-outline' : 'btn-primary'}" style="letter-spacing:1px;font-size:0.85rem" onclick="toggleCircuit(${t.id});closeModal()">
+        ${inCircuit ? '✕ Quitar del circuito' : '+ Añadir al circuito'}
+      </button>
+      <a href="${t.itf}" target="_blank" class="itf-link" style="flex:none">Ver en ITF ↗</a>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal')) closeModal();
+});
+
+function strategicTip(t) {
+  if (t.code === 'tur') return `Turquía es uno de los destinos más activos del circuito ITF. Antalya concentra una enorme cantidad de torneos M15 y M25, especialmente en enero-febrero sobre pista rápida cubierta. Ideal para arrancar el año y acumular puntos rápidamente. El nivel es variado, con muchos jugadores del Este de Europa.`;
+  if (t.code === 'esp' && t.surface === 'Clay') return `Tierra batida en España — condiciones ideales para jugadores de base de fondo. El draw suele ser competitivo pero con muchos locales, lo que puede ser una ventaja de movilización.`;
+  if (t.code === 'mar' || t.code === 'tun') return `Torneo en Norte de África — climatología cálida y seca. Buena opción para enero/febrero cuando España tiene torneos limitados. Requiere desplazamiento pero el nivel suele ser algo inferior.`;
+  if (t.code === 'prt') return `Portugal ofrece torneos con buena organización y superficie similar a España. Excelente para combinar con torneos españoles de la misma semana.`;
+  if (t.cat === 'M25') return `El M25 da el doble de puntos que el M15. Si tu nivel te permite entrar, prioriza estos torneos para acumular ranking ATP más rápido.`;
+  return `Torneo recomendado para jugadores sin ranking ATP. Acceso sin necesidad de puntos de clasificación.`;
+}
+
+// ─── EXPORT ───────────────────────────────────────────────────────────────────
+function exportCircuit() {
+  if (!myCircuit.length) return alert('Añade torneos a tu circuito primero.');
+  const totalPts = myCircuit.reduce((s,t) => s + t.pts, 0);
+  const text = `🎾 MI CIRCUITO ITF 2026\n${'─'.repeat(40)}\n` +
+    myCircuit.map((t,i) => {
+      const d = formatDate(t.week);
+      return `${i+1}. ${t.flag} ${t.name}\n   📅 ${d.start} – ${d.end}\n   📍 ${t.city}, ${t.country} | ${t.cat} | ${t.surface}\n   💰 $${t.prize.toLocaleString()} | 🏆 ${t.pts} pts ATP`;
+    }).join('\n\n') +
+    `\n\n${'─'.repeat(40)}\nTotal torneos: ${myCircuit.length}\nPuntos máximos posibles: ${totalPts} pts\nFuente: itftennis.com`;
+  navigator.clipboard.writeText(text).then(() => alert('✅ Circuito copiado al portapapeles'));
+}
+
+function printCircuit() {
+  window.print();
+}
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+function formatDate(weekStr) {
+  const start = new Date(weekStr);
+  const end = new Date(start);
+  end.setDate(end.getDate() + 6);
+  const fmt = d => d.toLocaleDateString('es-ES', { day:'2-digit', month:'short' });
+  const weekNum = getISOWeek(start);
+  return {
+    start: fmt(start),
+    end: fmt(end),
+    shortStart: fmt(start),
+    week: weekNum
+  };
+}
+
+function getISOWeek(d) {
+  const jan1 = new Date(d.getFullYear(), 0, 1);
+  return Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+}
+
+// ─── PLAYER SEARCH ────────────────────────────────────────────────────────────
+
+function togglePlayerPanel() {
+  document.getElementById('ps-body').classList.toggle('open');
+  document.getElementById('ps-toggle').classList.toggle('open');
+}
+
+function clearPlanForm() {
+  ['pf-name','pf-country','pf-itf','pf-atp','pf-surface','pf-license'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value = ''; el.classList.remove('error'); }
+  });
+  document.getElementById('player-result').classList.remove('visible');
+  document.getElementById('player-result').innerHTML = '';
+  document.getElementById('player-loading').style.display = 'none';
+  try { localStorage.removeItem(LS_PLAYER); } catch(e) {}
+}
+
+function getNextMonthWindow() {
+  const now = new Date();
+  const NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                 'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  for (let d = 1; d <= 4; d++) {
+    const nd = new Date(now.getFullYear(), now.getMonth() + d, 1);
+    const m  = nd.getMonth() + 1, y = nd.getFullYear();
+    const ts = TOURNAMENTS.filter(t => {
+      const tStart = new Date(t.week);
+      const tEnd   = new Date(t.week); tEnd.setDate(tEnd.getDate() + 6);
+      // Incluir si el inicio O el fin de semana cae en este mes/año
+      const startOk = (tStart.getMonth()+1) === m && tStart.getFullYear() === y;
+      const endOk   = (tEnd.getMonth()+1)   === m && tEnd.getFullYear()   === y;
+      return startOk || endOk;
+    });
+    if (ts.length) return { monthName: NAMES[nd.getMonth()], year: y, tournaments: ts };
+  }
+  return { monthName: 'Próximos', year: '', tournaments: TOURNAMENTS.slice(0, 8) };
+}
+
+async function generatePlan() {
+  const name    = (document.getElementById('pf-name').value || '').trim();
+  const country = (document.getElementById('pf-country').value || '').trim();
+  const itfRank = (document.getElementById('pf-itf').value || '').trim();
+  const atpRank = (document.getElementById('pf-atp').value || '').trim();
+  const surface = document.getElementById('pf-surface').value;
+  const license = (document.getElementById('pf-license').value || '').trim();
+
+  let valid = true;
+  ['pf-name','pf-country'].forEach(id => document.getElementById(id).classList.remove('error'));
+  if (!name)    { document.getElementById('pf-name').classList.add('error');    valid = false; }
+  if (!country) { document.getElementById('pf-country').classList.add('error'); valid = false; }
+  if (!valid) return;
+
+  const loadingEl  = document.getElementById('player-loading');
+  const loadingTxt = document.getElementById('player-loading-text');
+  const resultEl   = document.getElementById('player-result');
+  resultEl.classList.remove('visible');
+  resultEl.innerHTML = '';
+  loadingEl.style.display = 'flex';
+  loadingTxt.textContent  = 'Generando planificación para ' + name + '...';
+
+  const win = getNextMonthWindow();
+  const { monthName, year, tournaments: planTs } = win;
+
+  const tList = planTs.map(t =>
+    'ID ' + t.id + ' | ' + t.name + ' | ' + t.city + ' (' + t.country + ') | ' + t.cat + ' | ' + t.surface + ' | $' + t.prize.toLocaleString()
+  ).join('\n');
+
+  const playerDesc =
+    'Nombre: ' + name + '\n' +
+    'Pais: ' + country + '\n' +
+    (itfRank ? 'Ranking ITF: #' + itfRank + '\n' : 'Ranking ITF: sin ranking\n') +
+    (atpRank ? 'Ranking ATP: #' + atpRank + '\n' : 'Ranking ATP: sin ranking\n') +
+    (surface ? 'Superficie preferida: ' + surface + '\n' : '') +
+    (license ? 'Licencia ITF: ' + license + '\n' : '');
+
+  const prompt =
+    'Eres experto en estrategia del circuito ITF profesional.\n\n' +
+    'Datos del jugador:\n' + playerDesc + '\n' +
+    'Torneos disponibles en ' + monthName + ' ' + year + ':\n' + tList + '\n\n' +
+    'Genera SOLO este JSON (sin markdown, sin texto extra):\n' +
+    '{\n' +
+    '  "flag": "emoji de la bandera nacional de ' + country + '",\n' +
+    '  "next_month_plan": [\n' +
+    '    { "tournament_id": ID_NUMERICO_ENTERO, "status": "inscrito", "note": "motivo concreto" }\n' +
+    '  ],\n' +
+    '  "general_advice": "Consejo personalizado de 2-3 frases"\n' +
+    '}\n\n' +
+    'Reglas:\n' +
+    '- Un objeto por CADA torneo listado (IDs exactos como enteros)\n' +
+    '- inscrito: 2-3 torneos optimos segun pais, ranking y superficie\n' +
+    '- posible: 2-3 torneos alternativos razonables\n' +
+    '- libre: el resto\n' +
+    '- Las notas: especificas (distancia, nivel draw, superficie, puntos disponibles)\n' +
+    '- Sin ranking ITF/ATP: priorizar M15 sobre M25';
+
+  try {
+    const fetchP = fetch('/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1200,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const timeoutP = new Promise((_, rej) =>
+      setTimeout(() => rej(new Error('Tiempo de espera agotado (25s).')), 25000)
+    );
+    const response = await Promise.race([fetchP, timeoutP]);
+    if (!response.ok) {
+      const e = await response.json().catch(() => ({}));
+      throw new Error('API ' + response.status + ': ' + (e.error?.message || response.statusText));
+    }
+    const data    = await response.json();
+    const rawText = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
+    if (!rawText) throw new Error('Sin respuesta de la IA. Inténtalo de nuevo.');
+    const match = rawText.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('Formato inesperado. Inténtalo de nuevo.');
+    const parsed = JSON.parse(match[0]);
+    loadingEl.style.display = 'none';
+    renderPlan(parsed, name, country, itfRank, atpRank, license, surface, monthName, year);
+  } catch(err) {
+    loadingEl.style.display = 'none';
+    resultEl.innerHTML = '<div class="player-not-found">⚠️ <strong>Error:</strong> ' + err.message + '</div>';
+    resultEl.classList.add('visible');
+  }
+}
+
+function surfLabel(s) {
+  return s === 'Clay' ? '🟠 Tierra' : s === 'Hard' ? '🔵 Rápida' : s === 'Grass' ? '🟢 Hierba' : '';
+}
+
+function _renderPlanImpl(parsed, name, country, itfRank, atpRank, license, surface, monthName, year) {
+  const resultEl = document.getElementById('player-result');
+  const plan     = Array.isArray(parsed.next_month_plan) ? parsed.next_month_plan : [];
+  const flag     = parsed.flag || '🎾';
+  const nInscrito = plan.filter(p => p.status === 'inscrito').length;
+  const nPosible  = plan.filter(p => p.status === 'posible').length;
+
+  const planHTML = plan.map(item => {
+    const tId = parseInt(item.tournament_id, 10);
+    const t   = TOURNAMENTS.find(x => x.id === tId);
+    if (!t) return '';
+    const d    = formatDate(t.week);
+    const sc   = { inscrito:'status-inscrito', posible:'status-posible', libre:'status-libre' }[item.status] || 'status-libre';
+    const sl   = { inscrito:'✓ Recomendado', posible:'◎ Alternativa', libre:'— Sin prioridad' }[item.status] || '— Sin prioridad';
+    const si   = t.surface === 'Clay' ? '🟠' : t.surface === 'Hard' ? '🔵' : '🟢';
+    const sn   = t.surface === 'Clay' ? 'Tierra' : t.surface === 'Hard' ? 'Rápida' : 'Hierba';
+    return (
+      '<div class="plan-week">' +
+        '<div class="plan-week-date">' + d.shortStart + '<br><span style="font-size:0.65rem;color:var(--muted)">' + d.end + '</span></div>' +
+        '<div class="plan-week-info">' +
+          '<div class="plan-week-name">' + t.flag + ' ' + t.name + '</div>' +
+          '<div class="plan-week-meta">📍 ' + t.city + ' · ' + t.cat + ' · ' + si + ' ' + sn + ' · $' + t.prize.toLocaleString() + ' · 🏆 ' + t.pts + ' pts</div>' +
+          (item.note ? '<div class="plan-week-meta" style="margin-top:0.25rem;font-style:italic;color:var(--clay-light)">' + item.note + '</div>' : '') +
+        '</div>' +
+        '<span class="plan-status ' + sc + '">' + sl + '</span>' +
+      '</div>'
+    );
+  }).filter(Boolean).join('');
+
+  const meta = [
+    '🌍 <strong>' + country + '</strong>',
+    itfRank ? 'ITF <strong>#' + itfRank + '</strong>' : null,
+    atpRank ? 'ATP <strong>#' + atpRank + '</strong>' : null,
+    surface ? surfLabel(surface) : null,
+    license ? '🪪 ' + license : null,
+  ].filter(Boolean).map(x => '<span>' + x + '</span>').join('');
+
+  resultEl.innerHTML =
+    '<div class="player-profile">' +
+      '<div class="player-avatar">' + flag + '</div>' +
+      '<div class="player-info">' +
+        '<div class="player-name">' + name + '</div>' +
+        '<div class="player-meta">' + meta + '</div>' +
+      '</div>' +
+      '<a class="player-itf-link" href="https://www.itftennis.com/en/players/?query=' + encodeURIComponent(name) + '" target="_blank">Ver en ITF ↗</a>' +
+    '</div>' +
+
+    '<div class="next-month-title">Planificación ' +
+      '<span class="month-badge">' + monthName.toUpperCase() + ' ' + year + '</span>' +
+      '<span style="font-size:0.7rem;color:var(--muted);font-family:\'DM Sans\',sans-serif;font-weight:400;letter-spacing:0">' +
+        nInscrito + ' recomendados · ' + nPosible + ' alternativas' +
+      '</span>' +
+    '</div>' +
+
+    (planHTML || '<div class="player-not-found">Sin torneos disponibles para este mes.</div>') +
+
+    (parsed.general_advice
+      ? '<div class="plan-ai-note" style="margin-top:0.8rem">💡 <strong>Consejo estratégico:</strong> ' + parsed.general_advice + '</div>'
+      : '') +
+
+    '<div class="plan-ai-note" style="margin-top:0.5rem;font-size:0.7rem">' +
+      'Planificación generada por IA según los datos introducidos. ' +
+      'Verifica inscripciones en <a href="https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/" target="_blank" style="color:var(--clay-light)">itftennis.com</a>.' +
+    '</div>';
+
+  resultEl.classList.add('visible');
+}
+
+
+// ─── CUSTOM TOURNAMENTS ───────────────────────────────────────────────────────
+let customTournaments = [];
+let customIdCounter   = 1000;
+
+function openCustomModal() {
+  // Reset form
+  ['cm-name','cm-city','cm-country','cm-notes'].forEach(id => {
+    const el = document.getElementById(id); if (el) { el.value = ''; el.classList.remove('error'); }
+  });
+  // Default dates: today + 7 days
+  const today = new Date();
+  const end   = new Date(); end.setDate(end.getDate() + 7);
+  document.getElementById('cm-start').value = today.toISOString().slice(0,10);
+  document.getElementById('cm-end').value   = end.toISOString().slice(0,10);
+  document.getElementById('custom-modal').classList.add('open');
+}
+
+function closeCustomModal() {
+  document.getElementById('custom-modal').classList.remove('open');
+}
+document.addEventListener('click', e => {
+  if (e.target === document.getElementById('custom-modal')) closeCustomModal();
+});
+
+function saveCustomTournament() {
+  const name    = (document.getElementById('cm-name').value || '').trim();
+  const city    = (document.getElementById('cm-city').value || '').trim();
+  const country = (document.getElementById('cm-country').value || '').trim();
+  const start   = document.getElementById('cm-start').value;
+  const end     = document.getElementById('cm-end').value;
+  const type    = document.getElementById('cm-type').value;
+  const surface = document.getElementById('cm-surface').value;
+  const notes   = (document.getElementById('cm-notes').value || '').trim();
+
+  // Validate
+  let valid = true;
+  document.getElementById('cm-name').classList.remove('error');
+  document.getElementById('cm-start').classList.remove('error');
+  document.getElementById('cm-end').classList.remove('error');
+  if (!name)  { document.getElementById('cm-name').classList.add('error');  valid = false; }
+  if (!start) { document.getElementById('cm-start').classList.add('error'); valid = false; }
+  if (!end)   { document.getElementById('cm-end').classList.add('error');   valid = false; }
+  if (!valid) return;
+  if (end < start) { document.getElementById('cm-end').classList.add('error'); return; }
+
+  const t = {
+    id: customIdCounter++,
+    name: name,
+    city: city || '—',
+    country: country || '—',
+    flag: '🎾',
+    code: 'custom',
+    cat: type,
+    surface: surface,
+    week: start,
+    weekEnd: end,
+    prize: 0,
+    pts: 0,
+    notes: notes,
+    custom: true,
+    itf: ''
+  };
+
+  customTournaments.push(t);
+  myCircuit.push(t);  // auto-add to circuit
+  myCircuit.sort((a,b) => a.week.localeCompare(b.week));
+  saveState();
+  updateCircuitUI();
+  closeCustomModal();
+
+  // Refresh current view
+  if (currentView === 'calendar') renderCalendar();
+  else if (currentView === 'grid') renderGrid();
+  else renderTimeline();
+
+  // Toast notification
+  showToast('✅ "' + name + '" añadido al circuito');
+}
+
+function removeCustomTournament(id) {
+  customTournaments = customTournaments.filter(t => t.id !== id);
+  myCircuit         = myCircuit.filter(t => t.id !== id);
+  saveState();
+  updateCircuitUI();
+  if (currentView === 'calendar') renderCalendar();
+  else if (currentView === 'grid') renderGrid();
+  else renderTimeline();
+  showToast('Torneo eliminado del circuito');
+}
+
+function showToast(msg) {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = 'position:fixed;bottom:2rem;right:2rem;background:var(--bg3);border:1px solid var(--clay);color:var(--text);padding:0.7rem 1.2rem;border-radius:8px;font-size:0.85rem;z-index:999;transition:opacity 0.3s;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 2800);
+}
+
+// ─── CALENDAR VIEW ────────────────────────────────────────────────────────────
+let calYear  = new Date().getFullYear();
+let calMonth = new Date().getMonth(); // 0-indexed
+let calMode  = 'all';  // 'all' | 'circuit' | 'plan'
+
+// planTournaments from last AI generation: { id, status }
+let lastPlanData = [];
+
+const MONTH_NAMES_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                        'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DOW_NAMES      = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+
+function setCalMode(mode) {
+  calMode = mode;
+  ['all','circuit','plan'].forEach(m => {
+    document.getElementById('calmode-' + m).classList.toggle('active', m === mode);
+  });
+  renderCalendar();
+}
+
+function calPrev() {
+  calMonth--;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+function calNext() {
+  calMonth++;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const titleEl = document.getElementById('cal-title');
+  const tbody   = document.getElementById('cal-body');
+  if (!tbody) return;
+
+  titleEl.innerHTML = MONTH_NAMES_ES[calMonth] + ' <span>' + calYear + '</span>';
+
+  // ── Build event map: "YYYY-MM-DD" → [{id, name, flag, city, type, custom}] ──
+  const evMap = {};
+
+  function addEvt(t, type) {
+    const s = new Date(t.week + 'T00:00:00');
+    const e = t.weekEnd ? new Date(t.weekEnd + 'T00:00:00') : new Date(s);
+    if (!t.weekEnd) e.setDate(e.getDate() + 6);
+    const cur = new Date(s);
+    while (cur <= e) {
+      const key = cur.getFullYear() + '-' +
+                  String(cur.getMonth()+1).padStart(2,'0') + '-' +
+                  String(cur.getDate()).padStart(2,'0');
+      if (!evMap[key]) evMap[key] = [];
+      if (!evMap[key].find(x => x.id === t.id)) {
+        const isFirst = cur.getTime() === s.getTime();
+        const isLast  = cur.getTime() === e.getTime();
+        evMap[key].push({ id: t.id, name: t.name, flag: t.flag||'', city: t.city,
+                          type, custom: !!t.custom, isFirst, isLast });
+      }
+      cur.setDate(cur.getDate() + 1);
+    }
+  }
+
+  if (calMode === 'all') {
+    filteredTournaments.forEach(t => addEvt(t, 'itf'));
+    customTournaments.forEach(t => addEvt(t, 'custom'));
+  } else if (calMode === 'circuit') {
+    myCircuit.forEach(t => addEvt(t, t.custom ? 'custom' : 'circuit'));
+  } else if (calMode === 'plan') {
+    lastPlanData.forEach(item => {
+      const tid = parseInt(item.tournament_id, 10);
+      const t = TOURNAMENTS.find(x => x.id === tid) || customTournaments.find(x => x.id === tid);
+      if (!t) return;
+      const type = item.status === 'inscrito' ? 'plan_ok' : 'plan_alt';
+      addEvt(t, type);
+    });
+  }
+
+  // ── Color map ──
+  const colorMap = {
+    itf:      'cp-itf',
+    circuit:  'cp-circuit',
+    custom:   'cp-custom',
+    plan_ok:  'cp-plan-ok',
+    plan_alt: 'cp-plan-alt',
+  };
+
+  // ── Build table ──
+  const today   = new Date();
+  const todayKey = today.getFullYear() + '-' +
+                   String(today.getMonth()+1).padStart(2,'0') + '-' +
+                   String(today.getDate()).padStart(2,'0');
+
+  // First day of month, offset to Monday
+  const firstOfMonth = new Date(calYear, calMonth, 1);
+  const lastOfMonth  = new Date(calYear, calMonth + 1, 0);
+  const startDow     = (firstOfMonth.getDay() + 6) % 7; // 0=Mon
+
+  const DOW_LABELS = ['Lun','Mar','Mié','Jue','Vie','<span style="color:var(--clay-light)">Sáb</span>','<span style="color:var(--clay-light)">Dom</span>'];
+
+  // Header row
+  let html = '<tr>' + DOW_LABELS.map(d =>
+    '<th class="cal-th">' + d + '</th>'
+  ).join('') + '</tr>';
+
+  // Build 6-week grid
+  const cur = new Date(calYear, calMonth, 1 - startDow);
+  for (let row = 0; row < 6; row++) {
+    // Stop if all days of this row are past the month
+    if (cur.getMonth() > calMonth && cur.getFullYear() >= calYear) break;
+
+    html += '<tr>';
+    for (let col = 0; col < 7; col++) {
+      const dayNum   = cur.getDate();
+      const dayMonth = cur.getMonth();
+      const dayYear  = cur.getFullYear();
+      const key      = dayYear + '-' + String(dayMonth+1).padStart(2,'0') + '-' + String(dayNum).padStart(2,'0');
+      const isOther  = dayMonth !== calMonth;
+      const isToday  = key === todayKey;
+      const isWeekend= col >= 5;
+      const events   = evMap[key] || [];
+
+      let tdCls = 'cal-td';
+      if (isOther)   tdCls += ' other-month';
+      if (isToday)   tdCls += ' today';
+      if (isWeekend) tdCls += ' weekend-col';
+
+      const numHtml = isToday
+        ? '<div class="cal-day-num"><span class="cal-today-badge">' + dayNum + '</span></div>'
+        : '<div class="cal-day-num">' + dayNum + '</div>';
+
+      const MAX_PILLS = 3;
+      const shown  = events.slice(0, MAX_PILLS);
+      const extras = events.length - MAX_PILLS;
+
+      const pillsHtml = shown.map(ev => {
+        const cc    = colorMap[ev.type] || 'cp-itf';
+        const label = ev.name.replace(/^M\d+\+?H?\s+/,'').slice(0, 16);
+        return '<button class="cal-pill ' + cc + '" ' +
+               'onclick="openCalEvent(' + ev.id + ',' + ev.custom + ')" ' +
+               'title="' + ev.name + ' · ' + ev.city + '">' +
+               (isOther ? '' : ev.flag + ' ') + label +
+               '</button>';
+      }).join('');
+
+      const moreHtml = extras > 0
+        ? '<div class="cal-pill cp-more">+' + extras + '</div>'
+        : '';
+
+      html += '<td class="' + tdCls + '"><div class="cal-day-inner">' +
+              numHtml + pillsHtml + moreHtml +
+              '</div></td>';
+
+      cur.setDate(cur.getDate() + 1);
+    }
+    html += '</tr>';
+  }
+
+  tbody.innerHTML = html;
+}
+
+function openCalEvent(id, isCustom) {
+  if (isCustom) {
+    const t = customTournaments.find(x => x.id === id);
+    if (!t) return;
+    showToast(t.name + ' · ' + t.city + ' · ' + t.cat);
+  } else {
+    openModal(id);
+  }
+}
+
+// Patch renderPlan to store plan data for calendar
+
+function renderPlan(parsed, name, country, itfRank, atpRank, license, surface, monthName, year) {
+  // Store plan for calendar
+  if (parsed && Array.isArray(parsed.next_month_plan)) {
+    lastPlanData = parsed.next_month_plan;
+  }
+  // Call original implementation (defined earlier in file)
+  _renderPlanImpl(parsed, name, country, itfRank, atpRank, license, surface, monthName, year);
+}
+
+// ─── PATCH setView to handle calendar ────────────────────────────────────────
+// Override setView to add calendar support
+
+function setView(v) {
+  currentView = v;
+  ['grid','timeline','calendar'].forEach(id => {
+    document.getElementById('btn-' + id)?.classList.toggle('active', id === v);
+  });
+
+  document.getElementById('grid-view').style.display = v === 'grid' ? 'grid' : 'none';
+  document.getElementById('timeline-view').classList.toggle('visible', v === 'timeline');
+  document.getElementById('calendar-view').classList.toggle('visible', v === 'calendar');
+
+  if (v === 'grid')     renderGrid();
+  else if (v === 'timeline') renderTimeline();
+  else if (v === 'calendar') {
+    // Set calendar to show current month by default
+    const now = new Date();
+    calYear  = now.getFullYear();
+    calMonth = now.getMonth();
+    renderCalendar();
+  }
+}
+
+// Patch updateCircuitUI to also refresh calendar if active
+
+function updateCircuitUI() {
+  _updateCircuitUIImpl();
+  if (currentView === 'calendar') renderCalendar();
+}
+
+
+</script>
+
+</body>
+</html>

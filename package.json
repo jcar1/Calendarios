@@ -1,0 +1,8 @@
+{
+  "name": "circuito-itf-2026",
+  "version": "1.0.0",
+  "description": "Planificador de torneos ITF 2026",
+  "engines": {
+    "node": "18.x"
+  }
+}
